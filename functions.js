@@ -79,7 +79,7 @@ const calcEach = (line, flag, fn, digit) => {
  * TODO: 楽しくなって1行で書こうとしてしまっているため可読性が低い
  * TODO: エラー防止に余分なデータを追加しているのを除去
  * @param {number[][]} lines 
- * @param {boolean[]} flags 
+ * @param {boolean[]} checks 
  * @param {(duration: number, arg: number) => number} fn 
  * @param {number} digit 
  * @returns {string} 
@@ -93,19 +93,37 @@ const reduceDouble = (lines, checks, fn, digit) => {
   ).map(args => args.reduce((a, b) => a + b))), digit);
 };
 
+/**
+ * durationとvalのペアを作成
+ * @param {number[][]} lines 
+ * @param {boolean[]} checks 
+ * @returns {number[][]} 
+ */
+const calcPairs = (lines, checks) => zip(lines.concat([[120, 0, 0], [120, 0, 0]]), checks.concat([true, true]))
+  .filter(args => args[1])
+  .map(args => args[0].map(Number))
+  .map(line => [calcDuration(line[0], line[1]), line[2]]);
+
 const calcRoll2Density = () => {
   /** @type {HTMLTextAreaElement} */
   const inputText = document.getElementById('roll-density-input');
   /** @type {HTMLTextAreaElement} */
   const outputText = document.getElementById('roll-density-output');
   /** @type {HTMLSpanElement} */
-  const spanText = document.getElementById('roll-density-average');
+  const totalText = document.getElementById('roll-density-total');
+  /** @type {HTMLSpanElement} */
+  const secText = document.getElementById('roll-density-time');
+  /** @type {HTMLSpanElement} */
+  const avgText = document.getElementById('roll-density-average');
   const lines = inputText.value.split('\n').map(line => line.split(' '));
   const flags = lines.map(line => line.length == 3 && line.every(isNumber));
   /** @type {number[]} */
   const newLines = zip(lines, flags).map(args => calcEach(...args, roll2density, 1));
   outputText.value = newLines.join('\n');
-  spanText.innerText = reduceDouble(lines, flags, (d, val) => val / d, 1);
+  const pairs = calcPairs(lines, flags);
+  totalText.innerText = roundn(pairs.reduce((a, b) => a + b[1], 0), 0);
+  secText.innerText = roundn(pairs.reduce((a, b) => a + b[0], 0), 2);
+  avgText.innerText = roundn(pairs.reduce((a, b) => a + b[1], 0) / pairs.reduce((a, b) => a + b[0], 0), 1);
 };
 
 const calcDensity2Roll = () => {
@@ -114,13 +132,20 @@ const calcDensity2Roll = () => {
   /** @type {HTMLTextAreaElement} */
   const outputText = document.getElementById('density-roll-output');
   /** @type {HTMLSpanElement} */
-  const spanText = document.getElementById('density-roll-total');
+  const totalText = document.getElementById('density-roll-total');
+  /** @type {HTMLSpanElement} */
+  const secText = document.getElementById('density-roll-time');
+  /** @type {HTMLSpanElement} */
+  const avgText = document.getElementById('density-roll-average');
   const lines = inputText.value.split('\n').map(line => line.split(' '));
   const flags = lines.map(line => line.length == 3 && line.every(isNumber));
   /** @type {number[]} */
   const newLines = zip(lines, flags).map(args => calcEach(...args, density2roll, 0));
   outputText.value = newLines.join('\n');
-  spanText.innerText = reduceDouble(lines, flags, (d, val) => val, 0);
+  const pairs = calcPairs(lines, flags);
+  totalText.innerText = roundn(pairs.map(args => density2roll(...args)).reduce((a, b) => a + b, 0), 0);
+  secText.innerText = roundn(pairs.reduce((a, b) => a + b[0], 0), 2);
+  avgText.innerText = roundn(totalText.innerText / pairs.reduce((a, b) => a + b[0], 0), 1);
 };
 
 const clear1 = () => {
