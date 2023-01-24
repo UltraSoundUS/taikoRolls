@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width">
+    <title>太鼓の達人 連打計算機</title>
+    <link href="style.css">
+    <script src="code.js"></script>
+</head>
+
+<body>
+    <h2>太鼓の達人 連打計算機</h2>
+
+    <!-- BPM 連打 → 秒速 -->
+    <div>
+        <h3>連打数 → 秒速</h3>
+        <p>BPM 拍数 連打数</p>
+        <textarea id="roll-density-input" rows="12" cols="18"></textarea>
+        <textarea id="roll-density-output" rows="12" cols="18"></textarea>
+        <p>平均 <span id="roll-density-average"></span>&thinsp;beats/s</p>
+        <input type="button" id="clear-button-1" value="Clear">
+    </div>
+    <!-- BPM 秒速 → 連打 -->
+    <div>
+        <h3>秒速 → 連打数</h3>
+        <p>BPM 拍数 秒速</p>
+        <textarea id="density-roll-input" rows="12" cols="18"></textarea>
+        <textarea id="density-roll-output" rows="12" cols="18"></textarea>
+        <p>合計 <span id="density-roll-total"></span>&thinsp;beats</p>
+        <input type="button" id="clear-button-2" value="Clear">
+    </div>
+</body>
+
+</html>
